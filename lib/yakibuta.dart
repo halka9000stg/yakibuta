@@ -1,20 +1,7 @@
 import "dart:convert";
 
-typedef EncodingTabRec = ({
-    String key,
-    Encoding encoding});
-typedef Str2IntParser = Converter<String, List<int>>;
-typedef OnError<E, R> = R Function(E);
-
-typedef Fence = ({
-    InstructionType type,
-    String inst,
-    List<String> values});
-
-extension ComparableSppl on EncodingTabRec {
-  int compareTo(EncodingTabRec other)
-    => this.key.compareTo(other.key);
-}
+import "package:yakibuta/types.dart";
+import "package:yakibuta/conv.dart";
 
 class EncodingTab {
   List<EncodingTabRec> _recs;
@@ -59,35 +46,6 @@ class EncodingTab {
   }
 }
 
-class IntParser extends Converter<String, int> {
-  final int radix;
-  
-  const IntParser(this.radix);
-  
-  int convert(String src)
-    => int.parse(src, radix: this.radix);
-}
-class AsListConv<E> extends Converter<E, List<E>>{
-  List<E> convert(E el) => <E>[el];
-}
-extension AsListConvFuse<R, S> on Converter<R, S> {
-  Converter<R, List<S>> asListFuse()
-    => this.fuse(AsListConv<S>());
-}
-class ErrorHandleConv<S, T, E> extends Converter<S, T> {
-  final Converter<S, T> underlying;
-  final OnError<E, T> onError;
-  
-  ErrorHandleConv(this.underlying, this.onError);
-  
-  T convert(S src) {
-    try{
-      return this.underlying.convert(src);
-    } on E catch(e){
-      return this.onError(e);
-    }
-  }
-}
 enum ParseInstruction {
   hexInt("x"), binInt("b"), decInt("d"),
   nativeStr("n");
@@ -117,16 +75,6 @@ enum ParseInstruction {
     }
     return cand.first;
   }
-}
-
-enum InstructionType {
-  core, cmd;
-  
-  factory InstructionType.investigate(String from) => switch(from.substring(0, 1)){
-      ":" => InstructionType.core,
-      "&" => InstructionType.cmd,
-      _ => throw 0,
-  };
 }
 
 class Manager {
