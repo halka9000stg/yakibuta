@@ -1,0 +1,5 @@
+analyzer:
+  errors:
+    unused_local_variable: ignore
+    unused_field: ignore
+    unused_import: ignore
