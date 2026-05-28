@@ -89,37 +89,19 @@ class Manager {
   Manager(EncodingTab tab):
     this._tab = tab;
   
-  void get _setSysMes {
-    this._sysMes.add((this._aml.lastOrNull ?? -1) + 1);
-  }
-  String _markSysMes(String massage) {
-    this._setSysMes;
-    return massage;
-  }
+  
   String _oencSet(String enc){
     this._enc = this._tab.search(enc);
-    return this._markSysMes(this._enc.name);
+    return this._enc.name;
   }
   String _ofileModeSet(String path){
     this._ofileMode = true;
     this._f = File(path);
-    return this._markSysMes(path);
+    return path;
   }
   String _obyteModeSet(){
     this._obyteMode = true;
-    return this._markSysMes("Binary output mode");
-  }
-  String byteConv(String res){
-    this._aml.add((this._aml.lastOrNull ?? -1) + 1);
-    print(this._aml.last);
-    if(this._obyteMode){
-      return this._enc
-          .encode(res)
-          .map<String>((int b) => b.toRadixString(16))
-          .join(" ");
-    }else{
-      return res;
-    }
+    return "Binary output mode";
   }
   
   List<int> fenceIndexes(List<String> argsOf) {
@@ -183,19 +165,21 @@ class Manager {
             "oenc" => this._oencSet(f.values[0]),
             "ofile" => this._ofileModeSet(f.values[0]),
             "ob" => this._obyteModeSet(),
-            "suspend" => this.
-                   _markSysMes("%SUSPENDED%"),
+            "suspend" => "%SUSPENDED%",
             _ => "",
           }, isSystem: true, enc: this._enc),
     }).toList();
     
-  void printAs(List<MassageLine> res){
+  void printAs(List<MassageLine> res, {bool debug = false}){
     List<int> buf = <int>[];
     List<int> bufL = <int>[];
-    print(".len: ${res.length}.smes: ${this._sysMes} .aml: ${this._aml}");
+
+    if(debug){
+      print(".len: ${res.length}.smes: ${res.where(( MassageLine ml) => ml.isSystem).toList()} .aml: ${this}");
+    }
     
     for(int i = 0; i < res.length; i++){
-      if(res[i].isSystem){
+      if(res[i].isSystem && debug){
         print("");
         print("------- Begin System Massage ------");
         print(res[i].msg);
@@ -220,11 +204,4 @@ class Manager {
     
   static RegExp re
     = RegExp(r"(:([a-z][a-zA-Z0-9_-]+)?)|(\*[a-z][a-zA-Z0-9_-]*)");
-}
-
-extension SysMesApplier<S> on S {
-  S _markSysMesOn(Manager m, String massage) {
-    m._markSysMes(massage);
-    return this;
-  }
 }

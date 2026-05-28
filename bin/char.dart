@@ -13,9 +13,11 @@ void main(List<String> args){
     return;
   }
   
+  bool debug = args.first == "-";
+  
 	//:(n|d|b|x)(u8|u16|jis)
- if(!Manager.re.hasMatch(args.first)) {
-    main(<String>[":xascii"].followedBy(args).toList());
+ if(!Manager.re.hasMatch(args[debug ? 1 : 0])) {
+    main(debug ? <String>["-", ":xascii"].followedBy(args.skip(1)).toList() : <String>[":xascii"].followedBy(args).toList());
     return;
   }
   if(args.last != ":"){
@@ -23,7 +25,11 @@ void main(List<String> args){
     return;
   }
   
-  print(args);
+  if(debug){
+    print(args);
+  }
   
-  m.printAs(m.process(args));
+  m.printAs(
+    m.process(debug ? args.skip(1).toList(): args),
+      debug: debug);
 }
