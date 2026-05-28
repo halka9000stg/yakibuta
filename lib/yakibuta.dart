@@ -84,8 +84,6 @@ class Manager {
   Encoding _enc = utf8;
   bool _obyteMode = false;
   bool _ofileMode = false;
-  List<int> _aml = <int>[];
-  List<int> _sysMes = <int>[];
   late File _f;
 
   Manager(EncodingTab tab):
