@@ -4,6 +4,10 @@ version: 0.2.0
 repository: https://github.com/halka9000stg/yakibuta
 environment:
   sdk: "^3.10.0"
+dependencies:
+  charset: ^2.0.1
+  enough_convert: ^1.6.0
+  jcombu: ^1.1.1
 executables:
   char: char
   cc28: char
