@@ -33,18 +33,16 @@ For example,
 
 ## Available Encodings
 
-- UTF-8
-- ISO-8859-1 (Latin-1)
-- ASCII (US-ASCII)
-
-Bellows are now planning to add:
-
-- UTF-16BE
+- UTF-8/16BE/36BE
 - EUC-JP/KR
 - Shit-JIS
 - ISO-2022-JP
 - Big5
-- ISO-8859-2〜15 (Latin 2〜9, etc.)
+- ISO-8859-1〜15 (Latin 1〜9, Cyrillic, Arabic, Greek, Hebrew, Thai)
+- KOI8-U/R
+- ASCII (US-ASCII)
+
+Bellows are now planning to add:
 
 and more...
 

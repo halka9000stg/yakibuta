@@ -3,3 +3,6 @@ analyzer:
     unused_local_variable: ignore
     unused_field: ignore
     unused_import: ignore
+    non_constant_identifier_names: ignore
+    missing_const_final_var_or_type: ignore
+    nullable_type_in_catch_clause: ignore

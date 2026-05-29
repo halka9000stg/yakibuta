@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.2.1] - 2026-05-29
+### Added
+
+- add Encodings
+  - UTF-16BE/36BE
+  - EUC-JP/KR
+  - Shit-JIS
+  - ISO-2022-JP
+  - Big5
+  - ISO-8859-2〜15 (Latin 2〜9, Cyrillic, Arabic, Greek, Hebrew, Thai)
+  - KOI8-U/R
+
 ## [0.2.0] - 2026-05-28
 ### Added
 

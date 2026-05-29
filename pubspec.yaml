@@ -1,6 +1,6 @@
 name: yakibuta
 description: A CLI lightweight toolkit for checking chars through encodings.
-version: 0.2.0
+version: 0.2.1
 repository: https://github.com/halka9000stg/yakibuta
 environment:
   sdk: "^3.10.0"
