@@ -1,4 +1,4 @@
-import "package:yakibuta/types.dart" show NewLine;
+import "package:yakibuta/parts/types.dart" show NewLine;
 
 class CharHelp {
   static String get usage => r"""【USAGE】

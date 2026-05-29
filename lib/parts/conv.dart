@@ -1,8 +1,8 @@
 import "dart:convert";
 import "dart:io";
 
-import "package:yakibuta/types.dart";
-import "package:yakibuta/yakibuta.dart" show Manager;
+import "package:yakibuta/parts/types.dart";
+import "package:yakibuta/parts/manager.dart" show Manager;
 
 class IntParser extends Converter<String, int> {
   final int radix;
