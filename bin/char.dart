@@ -1,6 +1,4 @@
 import "package:yakibuta/yakibuta.dart";
-import "package:yakibuta/help.dart";
-import "package:yakibuta/types.dart" show NewLine;
 
 void main(List<String> args){
   final t = EncodingTab.dflt;
