@@ -19,7 +19,7 @@ extension AsListConvFuse<R, S> on Converter<R, S> {
   Converter<R, List<S>> asListFuse()
     => this.fuse(AsListConv<S>());
 }
-class ErrorHandleConv<S, T, E> extends Converter<S, T> {
+class ErrorHandleConv<S, T, E extends Object> extends Converter<S, T> {
   final Converter<S, T> underlying;
   final OnError<E, T> onError;
   
