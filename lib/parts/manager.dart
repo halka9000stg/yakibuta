@@ -4,6 +4,7 @@ import "dart:io";
 import "package:yakibuta/parts/types.dart";
 import "package:yakibuta/parts/enctab.dart";
 import "package:yakibuta/parts/conv.dart";
+import "package:yakibuta/parts/bom.dart";
 import "package:yakibuta/parts/help.dart";
 
 enum ParseInstruction {
@@ -129,6 +130,7 @@ class Manager {
     }).toList();
     
   void printAs(List<MassageLine> res, {bool debug = false}){
+    Encoding te = stdout.encoding;
     List<int> buf = <int>[];
     List<int> bufL = <int>[];
 
@@ -138,16 +140,25 @@ class Manager {
     
     for(int i = 0; i < res.length; i++){
       if(res[i].isSystem && debug){
+        stdout.encoding = te;
         print("");
         print("------- Begin System Massage ------");
         print(res[i].msg);
         print("------- End System Massage --------");
         continue;
+      }else if(res[i].isSystem){
+        continue;
       }
+      bufL = <int>[];
+      if(i +1 == res.length && res[i].msg.length == 0 && res[i].enc == ascii){
+        continue;
+      }
+      stdout.encoding = this._enc;
+      bufL += te.encode("\n");
       if(this._obyteMode){
-        bufL = this._enc.encode("xh{" + res[i].enc.encode(res[i].msg).map<String>((int b) => b.toRadixString(16)).join(" ") + "}");
+        bufL += te.encode("xh{" + this._enc.withByteOrder().encode(res[i].msg).map<String>((int b) => b.toRadixString(16)).join(" ") + "}");
       }else {
-        bufL = this._enc.encode(res[i].msg);
+        bufL += this._enc.withByteOrder().encode(res[i].msg);
       }
       buf.addAll(bufL);
       //buf.addAll(this._enc.encode("\n"));
@@ -156,10 +167,11 @@ class Manager {
       this._f.writeAsBytes(buf);
     }else{
       stdout.add(buf);
-      stdout.write("\n");
     }
+    stdout.encoding = te;
+    stdout.write("\n");
   }
-    
+  
   static RegExp re
     = RegExp(r"(:([a-z][a-zA-Z0-9_-]+)?)|(\*[a-z][a-zA-Z0-9_-]*)");
 }
