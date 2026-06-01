@@ -42,22 +42,10 @@ class CmdExec extends Converter<Fence, Fence> {
     InstructionType.core => src,
     InstructionType.cmd => switch(src.inst) {
       "file" => (type: InstructionType.core, inst: "d" + src.values[0], values: File(src.values[1]).readAsBytesSync().map<String>((int byte) => byte.toString()).toList(), at: src.at),
-      "stdin" => src,
+      "stdin" => (type: InstructionType.core, inst: "d" + src.values[0], values: stdin.readBytesAll().map<String>((int byte) => byte.toString()).toList(), at: src.at),
       _ => src,
     }
   };
-}
-
-class FenceTypeSorter extends Converter<Iterable<Fence>, Iterable<Fence>> {
-  Iterable<Fence> convert(Iterable<Fence> fences)
-    => fences
-      .where((Fence f)
-          => f.type == InstructionType.cmd)
-      .followedBy(
-         fences.where((Fence f)
-             => f.type == InstructionType.core))
-      .transform<Iterable<Fence>>(
-         FenceLineRecounter.recounter);
 }
 
 class FenceArranger extends Converter<Iterable<Fence>, Iterable<Fence>> {
@@ -91,4 +79,23 @@ extension ConverterApplier<S> on S {
 
 extension AsIterable<E> on Iterable<E> {
   Iterable<E> asIterable() => this;
+}
+
+extension ReadBytesAll on Stdin {
+  List<int> readBytesAll(){
+    List<int> ret = <int>[];
+    late int temp;
+    while(true){
+      temp = this.readByteSync();
+      if(temp == -1){
+        break;
+      } else {
+        ret.add(temp);
+      }
+    }
+    return ret;
+  }
+  String readAllAsString(
+      [Encoding encoding = systemEncoding])
+    => encoding.decode(this.readBytesAll());
 }
