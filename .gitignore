@@ -10,6 +10,9 @@ pubspec.lock
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
 doc/api/
+docs/api/
+doc/i/
+docs/i/
 
 # dotenv environment variables file
 .env*
