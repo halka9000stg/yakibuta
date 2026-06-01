@@ -5,5 +5,6 @@ class CharHelp {
   `char ((:(<format><encoding>)?(<byte-array>|<native-string>)*)|(\*<command> <argument>*))*`
 """;
   static String get help => CharHelp.usage.nl(2) + """"
-""";
+  
+more information: see https://pub.dev/packages/yakibuta""";
 }
