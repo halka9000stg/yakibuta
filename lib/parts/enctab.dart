@@ -5,7 +5,9 @@ import "package:enough_convert/koi8.dart";
 import "package:enough_convert/big5.dart";
 
 import "package:yakibuta/parts/types.dart";
+import "package:yakibuta/parts/error.dart";
 import "package:yakibuta/encodings/iso2022jp.dart";
+import "package:yakibuta/encodings/unicode.dart";
 
 class EncodingTab {
   List<EncodingTabRec> _recs;
@@ -22,7 +24,7 @@ class EncodingTab {
       String? group, String? series,
       int? nr, String? variant, bool showable = true}) {
     if(this.hasKey(key)) {
-      throw 0;
+      throw EncodingKeyUsedErr(key, encoding, this);
     }
     this._recs.add(etr(
         key, encoding, group: group,
@@ -37,13 +39,13 @@ class EncodingTab {
     if(t.isNotEmpty) {
       return t.first.encoding;
     } else {
-      throw 0;
+      throw NoSuchAsEncodingErr(cand, this._recs);
     }
   }
   List<String> list([bool useCounter = false])
     => this._recs.indexed
       .map<String>(((int, EncodingTabRec) r)
-        => (!useCounter ? "-" :  "${(r.$1 + 1).toString()}.") + " ${r.$2.key}:\t${r.$2.encoding.name}" + (r.$2.showable ? "\t(${r.$2.shows})" : ""))
+        => (!useCounter ? "-" :  (" " * (((this._recs.indexed.lastOrNull?.$1 ?? 0).toString().length) - (r.$1 + 1).toString().length)) + "${(r.$1 + 1).toString()}.") + " ${r.$2.key}:" + ("\t" * (r.$2.key.length <= 2 ? 2 : 1)) + r.$2.encoding.name + (r.$2.showable ? ("\t(${r.$2.shows})") : ""))
       .toList();
   String showList([bool useCounter = false]) => "\a\n" + this.list(useCounter).join("\n") + "\v\r\0";
   
@@ -53,6 +55,7 @@ class EncodingTab {
     t.add("u8", utf8, series: "UTF", group: "Unicode", nr: 8);
     t.add("u16", utf16, series: "UTF", group: "Unicode", nr: 16);
     t.add("u32", utf32, series: "UTF", group: "Unicode", nr: 32);
+    t.add("uni", unicode, series: "CodePoints", group: "Unicode");
     // EUCs
     t.add("euc", eucJp, series: "EUC", group: "Unix", variant: "JP");
     t.add("euck", eucKr, series: "EUC", group: "Unix", variant: "KR");
