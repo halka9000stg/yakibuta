@@ -3,21 +3,21 @@ import "dart:convert";
 class EncodingTabRec implements Comparable<EncodingTabRec> {
   final String key;
   final Encoding encoding;
+  /// Alternative Names for the Encoding
+  final List<String> alt;
   final String? group;
   final String? series;
   final int? nr;
   final String? variant;
-  final bool showable;
   
   EncodingTabRec({
       required this.key,
       required this.encoding,
-      this.group, this.series, this.nr, this.variant,
-      this.showable = true});
+      this.alt = const <String>[],
+      this.group, this.series, this.nr, this.variant});
   
   
   String get shows {
-    if(!this.showable) return "";
     if(this.series == null || (this.nr == null && this.variant == null)) return "";
     
     String series_ = this.series!.replaceAll(" ", "-");
@@ -51,10 +51,11 @@ class EncodingTabRec implements Comparable<EncodingTabRec> {
 }
 
 EncodingTabRec etr(String key, Encoding encoding, 
-    {String? group, String? series, int? nr, String? variant, bool showable = true})
+    {List<String> alt = const <String>[],
+     String? group, String? series, int? nr, String? variant})
   => EncodingTabRec(
-    key: key, encoding: encoding,
-    group: group, series: series, nr: nr, variant: variant, showable: showable);
+    key: key, encoding: encoding, alt: alt,
+    group: group, series: series, nr: nr, variant: variant);
 
 extension ComparableExt<T extends Comparable<T>> on T? {
   int compareTo(T? other){

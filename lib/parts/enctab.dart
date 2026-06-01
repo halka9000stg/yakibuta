@@ -21,15 +21,15 @@ class EncodingTab {
     => this._recs.any((EncodingTabRec r) => r.key == key);
 
   void add(String key, Encoding encoding, {
+      List<String> alt = const <String>[],
       String? group, String? series,
       int? nr, String? variant}) {
     if(this.hasKey(key)) {
       throw EncodingKeyUsedErr(key, encoding, this);
     }
     this._recs.add(etr(
-        key, encoding, group: group,
-        series: series, nr: nr, variant: variant,
-        showable: false));
+        key, encoding, alt: alt, group: group,
+        series: series, nr: nr, variant: variant));
     this._recs.sort();
   }
   Encoding search(String cand){
