@@ -6,6 +6,7 @@ import "package:yakibuta/parts/enctab.dart";
 import "package:yakibuta/parts/conv.dart";
 import "package:yakibuta/parts/bom.dart";
 import "package:yakibuta/parts/help.dart";
+import "package:yakibuta/parts/error.dart";
 
 enum ParseInstruction {
   hexInt("x"), binInt("b"), decInt("d"),
@@ -32,7 +33,7 @@ enum ParseInstruction {
       = ParseInstruction.values
         .where((ParseInstruction i) => i.code == s);
     if(cand.isEmpty) {
-      throw 0;
+      throw NoSuchAsParseInstructionErr.of(s);
     }
     return cand.first;
   }
@@ -43,7 +44,10 @@ class Manager {
   Encoding _enc = utf8;
   bool _obyteMode = false;
   bool _ofileMode = false;
+  bool _isLeMode = false;
+  bool _bomMode = false;
   late File _f;
+  List<MassageLine> _aml = <MassageLine>[];
 
   Manager(EncodingTab tab):
     this._tab = tab;
@@ -59,8 +63,16 @@ class Manager {
     return path;
   }
   String _obyteModeSet(){
-    this._obyteMode = true;
-    return "Binary output mode";
+    this._obyteMode = !this._obyteMode;
+    return this._obyteMode ? "Binary output mode" : "Native output mode";
+  }
+  String _leModeSet(){
+    this._isLeMode = !this._isLeMode;
+    return this._isLeMode ?  "Lower Endian mode" : "Big Endian mode";
+  }
+  String _bomModeSet(){
+    this._bomMode = !this._bomMode;
+    return this._bomMode ? "BOM using mode": "BOM unusing mode";
   }
   
   List<int> fenceIndexes(List<String> argsOf) {
@@ -104,7 +116,6 @@ class Manager {
   List<MassageLine> process(List<String> argsOf)
     => this.getFences(argsOf)
       .asIterable()
-      .transform<Iterable<Fence>>(FenceTypeSorter())
       .map<Fence>(CmdExec(this).convert)
       .transform<Iterable<Fence>>(FenceArranger())
       .map<MassageLine>((Fence f) => switch(f.type){
@@ -117,17 +128,23 @@ class Manager {
                        this._tab.search(f.inst.substring(1)))
                          .convert)
               .expand<int>((Iterable<int> i) => i).toList()), isSystem: false, enc: this._tab.search(f.inst.substring(1))),
-        .cmd => (nr: f.at, msg: switch(f.inst){
+        .cmd => (nr: f.at, msg: switch(f.inst.toLowerCase()){
             "list" => this._tab.showList(true),
             "usage" => CharHelp.usage,
             "help" => CharHelp.help,
             "oenc" => this._oencSet(f.values[0]),
             "ofile" => this._ofileModeSet(f.values[0]),
             "ob" => this._obyteModeSet(),
+            "usele" => this._leModeSet(),
+            "usebom" => this._bomModeSet(),
             "suspend" => "%SUSPENDED%",
+            "helppage" => (){
+                webOpen("https://pub.dev/packages/yakibuta");
+                return "";
+              }(),
             _ => "",
           }, isSystem: true, enc: this._enc),
-    }).toList();
+    }).toList()._setAml(this);
     
   void printAs(List<MassageLine> res, {bool debug = false}){
     Encoding te = stdout.encoding;
@@ -135,7 +152,7 @@ class Manager {
     List<int> bufL = <int>[];
 
     if(debug){
-      print(".len: ${res.length}.smes: ${res.where(( MassageLine ml) => ml.isSystem).toList()} .aml: ${this}");
+      print("\n.len: ${res.length}\n.smes: ${res.where(( MassageLine ml) => ml.isSystem).toList()}\n.aml: ${this._aml}");
     }
     
     for(int i = 0; i < res.length; i++){
@@ -154,11 +171,11 @@ class Manager {
         continue;
       }
       stdout.encoding = this._enc;
-      bufL += te.encode("\n");
+      //bufL += te.encode("\n");
       if(this._obyteMode){
-        bufL += te.encode("xh{" + this._enc.withByteOrder().encode(res[i].msg).map<String>((int b) => b.toRadixString(16)).join(" ") + "}");
+        bufL += te.encode("xh{" + this._enc.withByteOrder(order: ByteOrder.modeOf(this._isLeMode), addBom: this._bomMode).encode(res[i].msg).map<String>((int b) => b.toRadixString(16)).join(" ") + "}");
       }else {
-        bufL += this._enc.withByteOrder().encode(res[i].msg);
+        bufL += this._enc.withByteOrder(order: ByteOrder.modeOf(this._isLeMode), addBom: this._bomMode).encode(res[i].msg);
       }
       buf.addAll(bufL);
       //buf.addAll(this._enc.encode("\n"));
@@ -174,4 +191,36 @@ class Manager {
   
   static RegExp re
     = RegExp(r"(:([a-z][a-zA-Z0-9_-]+)?)|(\*[a-z][a-zA-Z0-9_-]*)");
+}
+
+extension AML on List<MassageLine> {
+  List<MassageLine> _setAml(Manager m){
+    m._aml.addAll(this);
+    return this;
+  }
+}
+
+void webOpen(String url, [bool ask = false]){
+  String plat = Platform.operatingSystem;
+  String cmd = switch(plat){
+      "android" => "xdg-open",
+      "fuchsia" => "",
+      "ios" => "",
+      "windows" => "start",
+      "linux" => "xdg-open",
+      "macos" => "",
+      _ => "",
+    };
+  if(ask){
+    stdout.write("");
+    String? res = stdin.readLineSync();
+    if(res == null){
+      webOpen(url, ask);
+      return;
+    }
+    if(res.toLowerCase() != "y"){
+      return;
+    }
+  }
+  Process.runSync(cmd, <String>[url]);
 }
