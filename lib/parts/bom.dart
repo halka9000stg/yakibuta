@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:charset/charset.dart";
+import "package:yakibuta/encodings/unicode.dart";
 
 class ByteOrderConv extends Converter<List<int>, List<int>>{
   final Encoding underlying;
@@ -18,29 +19,62 @@ class ByteOrderConv extends Converter<List<int>, List<int>>{
       return src;
     }
     print("utf (${this.underlying.name})\n");
+    int? us = ByteOrderCodec.unitSize(this.underlying);
+    if(us == null) {
+      List<int> bom = ByteOrderCodec.bom(this.underlying, .be);
+      if(bom.isEmpty){
+        return src;
+      } else {
+        bool hasBom = ByteOrderCodec.hasBomOf(src, this.underlying, .be);
+        if(hasBom == this.addBom){
+          return src;
+        }else if(hasBom){
+          return src.skip(bom.length).toList();
+        } else {
+          return bom.followedBy(src).toList();
+       }
+      }
+    }
     //if reverse
     //  true: in is auto-detec., out is be with bom
     //  false: in is be with bom, out is order
     
     ByteOrder outBom = this.reverse ? ByteOrder.be : this.order;
+      List<int> obom = ByteOrderCodec.bom(this.underlying, outBom);
     
     bool hasBeBom = ByteOrderCodec.hasBomOf(src, this.underlying, ByteOrder.be);
     bool hasLeBom = ByteOrderCodec.hasBomOf(src, this.underlying, ByteOrder.le);
+    bool hasBom = hasBeBom || hasLeBom;
+    
     print("BE BOM: $hasBeBom\nLE BOM: $hasLeBom");
+    
     //false-false...be, true-false..be,
     //false-true...le, true-false..non,
     ByteOrder curBom = hasLeBom ? ByteOrder.le : ByteOrder.be;
+    
     print("Cur BO: $curBom");
     print("Out BO: $outBom");
+    
     print("Is Needed to Switch: ${curBom != outBom}");
-    List<int> nuked = (hasBeBom || hasLeBom) ? src.skip(ByteOrderCodec.bomLen(this.underlying, curBom)).toList() : src;
-    List<int> arranged = (curBom == outBom) ? nuked : ByteOrderCodec.switchOrder(nuked, this.underlying);
-    return this.addBom ? ByteOrderCodec.bom(this.underlying, outBom).followedBy(arranged).toList() : arranged;
+    if(curBom == outBom){
+      if(hasBom == this.addBom){
+        return src;
+      }
+      if(hasBom) {
+        return src.skip(ByteOrderCodec.bomLen(this.underlying, curBom)).toList();
+      } else {
+        return obom.followedBy(src).toList();
+      }
+    }
+    //print("Bom Arrange");
+    Iterable<int> arranged = ByteOrderCodec.switchOrder(hasBom ? src.skip(ByteOrderCodec.bomLen(this.underlying, curBom)) : src, this.underlying);
+    
+    return (this.addBom ? obom.followedBy(arranged) : arranged).toList();
   }
 }
 class ByteOrderCodec extends Encoding {
   static List<Encoding> target = <Encoding>[
-      utf8, utf16, utf32];
+      utf8, utf16, utf32, unicode];
   
   final Encoding underlying;
   final ByteOrder order;
@@ -99,15 +133,16 @@ class ByteOrderCodec extends Encoding {
               => ByteOrderCodec.bom(e, o)[elm.$1] == elm.$2)
           .reduce((bool prev, bool curr) => prev && curr);
   static int? unitSize(Encoding e) => switch(e) {
+    unicode => null,
     utf8 => null,
     utf16 => 1,
     utf32 => 2,
     _ => null,
   };
-  static List<int> switchOrder(List<int> target, Encoding enc){
+  static List<int> switchOrder(Iterable<int> target, Encoding enc){
     int? us = ByteOrderCodec.unitSize(enc);
     if(us == null){
-      return target;
+      return target.toList();
     }
     
     List<int> temp = <int>[...target];
@@ -137,6 +172,8 @@ enum ByteOrder {
   const ByteOrder(this.name);
   
   final String name;
+  factory ByteOrder.modeOf([bool isLeMode = false])
+      => isLeMode ? .le : .be;
   ByteOrder get reversed => switch(this){
     .be => .le,
     .le => .be,
