@@ -17,14 +17,27 @@ class EncodingTabRec implements Comparable<EncodingTabRec> {
       this.group, this.series, this.nr, this.variant});
   
   
+  String asListView({
+      int Function()? counter, int? allCount,
+      required int Function(String key) tabCount}){
+    int? count = counter == null ? null : counter();
+    String mark = count == null ? "-" : "$count.";
+    String pad  = " " * (count != null && allCount != null ? (allCount - 1).toString().length - count.toString().length : 0);
+    String topBase = "$pad$mark ";
+    String tabs = "\t" * tabCount(this.key);
+    String altElms = this.alt.join(", ");
+    String alts = altElms == "" ? "" : "\n\t\t($altElms)";
+    return "$topBase${this.key}:$tabs${this.iana}$alts";
+  }
+  String get iana => this.encoding.name;
   String get shows {
     if(this.series == null || (this.nr == null && this.variant == null)) return "";
     
-    String series_ = this.series!.replaceAll(" ", "-");
+    String series_i = this.series!.replaceAll(" ", "-");
     String nr = this.nr == null ? "" : "-${this.nr}";
     String variant = this.variant == null ? "" : "-${this.variant}";
     
-    return "$series_$nr$variant";
+    return "$series_i$nr$variant";
   }
   @override
   int compareTo(EncodingTabRec other){
@@ -46,7 +59,7 @@ class EncodingTabRec implements Comparable<EncodingTabRec> {
     cnt = this.variant.compareTo(other.variant);
     if(cnt != 0) return cnt;
     
-    return this.encoding.name.compareTo(other.encoding.name);
+    return this.iana.compareTo(other.iana);
   }
 }
 
@@ -56,6 +69,19 @@ EncodingTabRec etr(String key, Encoding encoding,
   => EncodingTabRec(
     key: key, encoding: encoding, alt: alt,
     group: group, series: series, nr: nr, variant: variant);
+
+extension EncodingTabRecEx  on Iterable<EncodingTabRec> {
+  Iterable<String> listView({
+      int Function(int index)? counter,
+      required int Function(String key) tabCount})
+    => this.indexed
+      .map<String>(((int, EncodingTabRec) r)
+        => r.$2.asListView(
+          counter: counter != null ? () => counter(r.$1) : null,
+          allCount: this.length, tabCount: tabCount));
+}
+
+int simpleCounter(int index) => index + 1;
 
 extension ComparableExt<T extends Comparable<T>> on T? {
   int compareTo(T? other){
@@ -103,6 +129,6 @@ extension NewLine on String {
 typedef MassageLine = ({int nr, String msg, Encoding enc, bool isSystem});
 
 extension MassageExt on MassageLine {
-  List<int> asBytes([Encoding? encoding_override])
-    => (encoding_override ?? this.enc).encode(this.msg);
+  List<int> asBytes([Encoding? encodingOverride])
+    => (encodingOverride ?? this.enc).encode(this.msg);
 }
