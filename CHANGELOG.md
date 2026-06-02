@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.2.2] - 2026-06-02
+### Changed
+
+- addressed bom handling
+- addressed improving of encoding list
+  - add information s.a. alt-name, grouping, series, variant, etc.
+  - as fixing, renamed to IANA Register names for each encodings
+  - improved showing format
+
+### Added
+
+- (sub-)command `stdin` is implemented
+
 ## [0.2.1] - 2026-05-29
 ### Added
 
