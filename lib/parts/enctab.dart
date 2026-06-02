@@ -65,7 +65,7 @@ class EncodingTab {
     t.add("euck", eucKr.renamedUC, series: "EUC", group: "Unix", variant: "KR", alt: <String>["Wansung", "KS X 2901", "KS C 2901"]);
     // CJKVs
     t.add("sjis", shiftJis.renamed("Shift_JIS"), group: "CJKV", series: "JP", alt: <String>["Shift JIS", "SJIS", "PCK"]);
-    t.add("iso", iso2022jp, series: "ISO 2022", group: "CJKV", variant: "JP", alt: <String>[]);
+    t.add("iso", iso2022jp, series: "ISO 2022", group: "CJKV", variant: "JP", alt: <String>["JIS", "JIS Code", "JISコード"]);
     t.add("big5", big5, group: "CJKV", series: "ZH", alt: <String>["Big-5", "大五碼"]);
     // ISO-8859s
     t.add("lat1", latin1.renamedUC, series: "ISO 8859", group: "ISO Extended ASCII-like", nr: 1, alt: <String>["Latin-1", "Latin/Western-European", "ECMA-94"]);
