@@ -3,7 +3,7 @@ description: A CLI lightweight toolkit for checking chars through encodings.
 version: 0.2.2
 repository: https://github.com/halka9000stg/yakibuta
 environment:
-  sdk: "^3.10.0"
+  sdk: "^3.12.0"
 dependencies:
   charset: ^2.0.1
   enough_convert: ^1.6.0
@@ -11,3 +11,9 @@ dependencies:
 executables:
   char: char
   cc28: char
+  char.find: char/find
+  cc28.find: char/find
+  char.conv: char/conv
+  cc28.conv: char/conv
+  char.pack: char/pack
+  cc28.pack: char/pack
