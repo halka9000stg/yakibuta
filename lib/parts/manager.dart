@@ -142,8 +142,9 @@ class Manager {
                 webOpen("https://pub.dev/packages/yakibuta");
                 return "";
               }(),
+            "teman" => this._tab.searchRec(f.values[0]).info(),
             _ => "",
-          }, isSystem: true, enc: this._enc),
+          }, isSystem: !<String>["teman"].contains(f.inst.toLowerCase()), enc: this._enc),
     }).toList()._setAml(this);
     
   void printAs(List<MassageLine> res, {bool debug = false}){

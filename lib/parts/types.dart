@@ -39,6 +39,15 @@ class EncodingTabRec implements Comparable<EncodingTabRec> {
     
     return "$series_i$nr$variant";
   }
+  String info() {
+    List<String> lines = <String>[];
+    lines.add("Key: ${this.key}");
+    lines.add("IANA Registered Name: ${this.iana}");
+    if(this.alt.isNotEmpty) lines.add("Alternative Names: " + this.alt.join(", "));
+    String? series_i = this.series?.replaceAll(" ", "-");
+    if(series_i != null) lines.add("Encoding Series: $series_i");
+    return lines.join("\n") + "\n";
+  }
   @override
   int compareTo(EncodingTabRec other){
     late int cnt;
