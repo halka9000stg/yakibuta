@@ -9,18 +9,19 @@ abstract class PDirective {
   final PackId? id;
   
   PDirective(this.inst, this.id);
+  PDirective.only(this.inst): this.id = null;
 }
 abstract class PAnonDirective extends PDirective {
   @override
   final Null id = null;
   
-  PAnonDirective(super.inst);
+  PAnonDirective(String inst): super.only(inst);
 }
-abstract class PNamedDirective {
+abstract class PNamedDirective extends PDirective {
   @override
   final PackId id;
   
-  PAnonDirective({required super.inst, required this.id});
+  PNamedDirective({required String inst, required this.id}): super.only(inst);
 }
 
 class Package {}
