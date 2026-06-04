@@ -1,4 +1,5 @@
 import "dart:convert";
+import "dart:typed_data";
 
 import "package:charset/charset.dart";
 import "package:yakibuta/encodings/unicode.dart";
@@ -15,7 +16,7 @@ class ByteOrderConv extends Converter<List<int>, List<int>>{
       this.reverse = false});
  
   List<int> convert(List<int> src){
-    if(!ByteOrderCodec.target.any((Encoding te) => this.underlying == te)){
+    if((!ByteOrderCodec.target.any((Encoding te) => this.underlying == te))){
       return src;
     }
     print("utf (${this.underlying.name})\n");
@@ -131,7 +132,7 @@ class ByteOrderCodec extends Encoding {
       : target.take(ByteOrderCodec.bomLen(e, o))
           .indexed.map<bool>(((int, int) elm) 
               => ByteOrderCodec.bom(e, o)[elm.$1] == elm.$2)
-          .reduce((bool prev, bool curr) => prev && curr);
+          .fold<bool>(true, (bool prev, bool curr) => prev && curr);
   static int? unitSize(Encoding e) => switch(e) {
     unicode => null,
     utf8 => null,
@@ -172,11 +173,21 @@ enum ByteOrder {
   const ByteOrder(this.name);
   
   final String name;
+  factory ByteOrder.from(Endian endian)
+    => switch(endian){
+      .big => .be,
+      .little => .le,
+      _ => throw 0,
+  };
   factory ByteOrder.modeOf([bool isLeMode = false])
       => isLeMode ? .le : .be;
   ByteOrder get reversed => switch(this){
     .be => .le,
     .le => .be,
+  };
+  Endian get endian => switch(this){
+    .be => .big,
+    .le => .little,
   };
 }
 
