@@ -33,13 +33,15 @@ class EncodingTab {
     
     if(remains <= 0) this._recs.sort();
   }
-  Encoding search(String cand){
+  Encoding search(String cand)
+    => this.searchRec(cand).encoding;
+  EncodingTabRec searchRec(String cand){
     String c = toLC(cand);
     Iterable<EncodingTabRec> t
       = this._recs.where((EncodingTabRec r)
         => toLC(r.key) == c || toLC(r.iana) == c);
     if(t.isNotEmpty) {
-      return t.first.encoding;
+      return t.first;
     } else {
       throw NoSuchAsEncodingErr(cand, this._recs);
     }
