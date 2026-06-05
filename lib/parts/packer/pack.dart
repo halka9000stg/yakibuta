@@ -1,4 +1,4 @@
-import "package:yakibuta/parts/core/types.dart";
+import "package:yakibuta/parts/packer/directive.dart";
 
 typedef PDveResult<D extends PDirective>
     = ({D pDve, int consumedLines, bool done});
