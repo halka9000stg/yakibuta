@@ -1,4 +1,4 @@
-import "package:yakibuta/parts/core/types.dart" show NewLine;
+import "package:yakibuta/common/libmisc.dart";
 
 class CharHelp {
   static String get usage => r"""【USAGE】

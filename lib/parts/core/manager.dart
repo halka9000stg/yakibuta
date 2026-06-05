@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:io";
 
+import "package:yakibuta/common/libmisc.dart";
 import "package:yakibuta/parts/core/types.dart";
 import "package:yakibuta/parts/core/enctab.dart";
 import "package:yakibuta/parts/core/conv.dart";
@@ -145,6 +146,7 @@ class Manager {
             "teman" => this._tab.searchRec(f.values[0]).info(),
             _ => "",
           }, isSystem: !<String>["teman"].contains(f.inst.toLowerCase()), enc: this._enc),
+        .rem => (nr: f.at, msg: cmdArgsJoin(f.inst, f.values), isSystem: true, enc: this._enc),
     }).toList()._setAml(this);
     
   void printAs(List<MassageLine> res, {bool debug = false}){

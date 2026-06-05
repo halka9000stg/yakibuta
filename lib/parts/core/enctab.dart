@@ -4,6 +4,7 @@ import "package:charset/charset.dart";
 import "package:enough_convert/koi8.dart";
 import "package:enough_convert/big5.dart";
 
+import "package:yakibuta/common/libmisc.dart";
 import "package:yakibuta/parts/core/types.dart";
 import "package:yakibuta/parts/core/error.dart";
 import "package:yakibuta/encodings/iso2022jp.dart";

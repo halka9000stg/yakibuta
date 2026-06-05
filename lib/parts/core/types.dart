@@ -90,8 +90,6 @@ extension EncodingTabRecEx  on Iterable<EncodingTabRec> {
           allCount: this.length, tabCount: tabCount));
 }
 
-int simpleCounter(int index) => index + 1;
-
 extension ComparableExt<T extends Comparable<T>> on T? {
   int compareTo(T? other){
     T? self = this;
@@ -122,17 +120,14 @@ extension ComparableSppl on EncodingTabRec {
 }
 
 enum InstructionType {
-  core, cmd;
+  core, cmd, rem;
   
   factory InstructionType.investigate(String from) => switch(from.substring(0, 1)){
       ":" => InstructionType.core,
       "*" => InstructionType.cmd,
+      "?" => InstructionType.rem,
       _ => throw 0,
   };
-}
-
-extension NewLine on String {
-  String nl([int count = 1]) => this + "\n" * count;
 }
 
 typedef MassageLine = ({int nr, String msg, Encoding enc, bool isSystem});

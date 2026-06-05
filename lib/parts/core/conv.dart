@@ -44,7 +44,8 @@ class CmdExec extends Converter<Fence, Fence> {
       "file" => (type: InstructionType.core, inst: "d" + src.values[0], values: File(src.values[1]).readAsBytesSync().map<String>((int byte) => byte.toString()).toList(), at: src.at),
       "stdin" => (type: InstructionType.core, inst: "d" + src.values[0], values: stdin.readBytesAll().map<String>((int byte) => byte.toString()).toList(), at: src.at),
       _ => src,
-    }
+    },
+    InstructionType.rem => src,
   };
 }
 
