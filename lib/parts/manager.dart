@@ -1,12 +1,12 @@
 import "dart:convert";
 import "dart:io";
 
-import "package:yakibuta/parts/types.dart";
-import "package:yakibuta/parts/enctab.dart";
-import "package:yakibuta/parts/conv.dart";
-import "package:yakibuta/parts/bom.dart";
-import "package:yakibuta/parts/help.dart";
-import "package:yakibuta/parts/error.dart";
+import "package:yakibuta/parts/core/types.dart";
+import "package:yakibuta/parts/core/enctab.dart";
+import "package:yakibuta/parts/core/conv.dart";
+import "package:yakibuta/parts/core/bom.dart";
+import "package:yakibuta/parts/core/help.dart";
+import "package:yakibuta/parts/core/error.dart";
 
 enum ParseInstruction {
   hexInt("x"), binInt("b"), decInt("d"),

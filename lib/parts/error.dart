@@ -1,8 +1,8 @@
 import "dart:convert";
 
-import "package:yakibuta/parts/types.dart";
-import "package:yakibuta/parts/enctab.dart";
-import "package:yakibuta/parts/manager.dart";
+import "package:yakibuta/parts/core/types.dart";
+import "package:yakibuta/parts/core/enctab.dart";
+import "package:yakibuta/parts/core/manager.dart";
 
 abstract class YakibutaErr implements Exception {}
 
