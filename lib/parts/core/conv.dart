@@ -100,3 +100,15 @@ extension ReadBytesAll on Stdin {
       [Encoding encoding = systemEncoding])
     => encoding.decode(this.readBytesAll());
 }
+
+class TransConverter<RC extends Encoding, WC extends Encoding> extends Converter<List<int>, List<int>> {
+  final RC readEncoding;
+  final WC writeEncoding;
+  
+  TransConverter(
+      this.readEncoding, this.writeEncoding);
+  
+  List<int> convert(List<int> input)
+    => (this.readEncoding.decoder
+        .fuse(this.writeEncoding.encoder)).convert(input);
+}
